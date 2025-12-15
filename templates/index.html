@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Football Match Outcome Predictor</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            padding: 30px;
+        }
+        h1 {
+            color: #333;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            width: 180px;
+        }
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        #output {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 450px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Football Match Predictor</h1>
+
+    <input id="hg" type="number" placeholder="Home Goals">
+    <input id="ag" type="number" placeholder="Away Goals"><br>
+
+    <input id="hs" type="number" placeholder="Home Shots">
+    <input id="as" type="number" placeholder="Away Shots"><br>
+
+    <input id="hsot" type="number" placeholder="Home Shots on Target">
+    <input id="asot" type="number" placeholder="Away Shots on Target"><br>
+
+    <input id="hf" type="number" placeholder="Home Fouls">
+    <input id="af" type="number" placeholder="Away Fouls"><br>
+
+    <input id="hc" type="number" placeholder="Home Corners">
+    <input id="ac" type="number" placeholder="Away Corners"><br>
+
+    <input id="hy" type="number" placeholder="Home Yellow Cards">
+    <input id="ay" type="number" placeholder="Away Yellow Cards"><br>
+
+    <input id="hr" type="number" placeholder="Home Red Cards">
+    <input id="ar" type="number" placeholder="Away Red Cards"><br>
+
+    <button onclick="predict()">Predict</button>
+
+    <div id="output"></div>
+</div>
+
+<script>
+function predict() {
+    fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "FTH Goals": parseInt(hg.value),
+            "FTA Goals": parseInt(ag.value),
+            "H Shots": parseInt(hs.value),
+            "A Shots": parseInt(as.value),
+            "H SOT": parseInt(hsot.value),
+            "A SOT": parseInt(asot.value),
+            "H Fouls": parseInt(hf.value),
+            "A Fouls": parseInt(af.value),
+            "H Corners": parseInt(hc.value),
+            "A Corners": parseInt(ac.value),
+            "H Yellow": parseInt(hy.value),
+            "A Yellow": parseInt(ay.value),
+            "H Red": parseInt(hr.value),
+            "A Red": parseInt(ar.value)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let text = "";
+        if (data.prediction === "H") text = "🏠 Home Team Wins";
+        else if (data.prediction === "A") text = "✈️ Away Team Wins";
+        else text = "🤝 Match Draw";
+
+        document.getElementById("output").innerText =
+            `${text} (${data.confidence}%)`;
+    });
+}
+</script>
+
+</body>
+</html>
